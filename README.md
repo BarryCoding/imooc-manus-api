@@ -41,3 +41,9 @@ app/
     ├── middleware/  # HTTP middleware
     └── error/       # HTTP error handlers
 ```
+
+## 接口响应约定
+
+1. code: 业务状态码, 和HTTP状态码保持一致, 默认`200`
+2. msg: 响应消息提示, 默认`"success"`
+3. data: 响应数据, 默认为`{}`
