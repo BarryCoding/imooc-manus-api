@@ -47,3 +47,26 @@ app/
 1. code: 业务状态码, 和HTTP状态码保持一致, 默认`200`
 2. msg: 响应消息提示, 默认`"success"`
 3. data: 响应数据, 默认为`{}`
+
+## Pydantic-settings
+
+**Dependencies:**
+- Added `pydantic-settings>=2.12.0` to project dependencies
+
+```sh
+uv add pydantic-settings
+```
+
+**Configuration Management:**
+- Created `core/config.py` with `Settings` class using `BaseSettings` from `pydantic-settings`
+- Configured environment variable loading from `.env` file with UTF-8 encoding
+- Added settings for environment, logging, database, Redis, and cloud storage
+- Implemented cached `get_settings()` function to avoid repeated configuration reads
+
+**Project Structure:**
+- Moved application entry point from root `main.py` to `app/main.py`
+- Updated FastAPI app initialization to load and use centralized settings
+
+```sh
+uv run uvicorn app.main:app --reload
+```
