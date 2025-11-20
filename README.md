@@ -70,3 +70,13 @@ uv add pydantic-settings
 ```sh
 uv run uvicorn app.main:app --reload
 ```
+
+## Logging
+
+**Infrastructure:**
+- Created `app/infrastructure/logging/logging.py` with `setup_logging()` function
+- Integrated logging initialization in `app/main.py` at application startup
+
+**Configuration:**
+- Log level controlled by `log_level` setting in `core/config.py` (default: `"INFO"`)
+- Log format: `%(asctime)s - %(name)s - %(levelname)s - %(message)s` with date format `%Y-%m-%d %H:%M:%S`
