@@ -80,3 +80,20 @@ uv run uvicorn app.main:app --reload
 **Configuration:**
 - Log level controlled by `log_level` setting in `core/config.py` (default: `"INFO"`)
 - Log format: `%(asctime)s - %(name)s - %(levelname)s - %(message)s` with date format `%Y-%m-%d %H:%M:%S`
+
+## Lifespan CORS Router
+
+**Interface Layer:**
+- Created `app/interface/endpoint/route.py` with `create_api_routes()` function to centralize API route management
+- Created `app/interface/endpoint/status_route.py` with health check endpoint at `/api/status`
+
+**Features:**
+- Added lifespan context manager in `app/main.py` using `@asynccontextmanager` for application lifecycle management
+- Implemented CORS middleware configuration in `app/main.py` with permissive settings (allow all origins, methods, and headers)
+- Integrated router system with `/api` prefix in `app/main.py`
+- Added OpenAPI tags configuration for API documentation organization
+- Created status health check endpoint that returns `Response` schema with success message
+
+**Project Structure:**
+- Router modules organized under `app/interface/endpoint/` directory
+- Status route uses prefix `/status` and tag `"状态模块"` for API documentation grouping
