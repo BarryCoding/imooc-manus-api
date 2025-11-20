@@ -97,3 +97,19 @@ uv run uvicorn app.main:app --reload
 **Project Structure:**
 - Router modules organized under `app/interface/endpoint/` directory
 - Status route uses prefix `/status` and tag `"状态模块"` for API documentation grouping
+
+## Handle Exception
+
+**Application Layer:**
+- Created `app/application/error/exception.py` with `AppException` base class inheriting from `RuntimeError` with customizable attributes (`code`, `status_code`, `msg`, `data`)
+- Created exception classes in `app/application/error/exception.py`: `BadRequestError` (400), `NotFoundError` (404), `ValidationError` (422), `TooManusRequestsError` (429), `ServerRequestsError` (500)
+
+**Interface Layer:**
+- Created `app/interface/error/exception_handler.py` with `register_exception_handler()` function
+- Implemented `app_exception_handler()` to handle `AppException` and all subclasses, returning responses in unified `Response` schema format
+- Implemented `http_exception_handler()` to handle FastAPI `HTTPException`, converting to unified response format
+- Implemented `exception_handler()` to catch all unhandled exceptions, returning 500 status with default error message
+
+**Features:**
+- Integrated exception handler registration in `app/main.py` via `register_exception_handler(app)` at application startup
+- All exception handlers log errors using the application logger and return responses following the unified `Response` schema (code, msg, data) as JSON with appropriate HTTP status codes
