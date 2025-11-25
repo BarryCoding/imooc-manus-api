@@ -161,3 +161,26 @@ uv add redis
 - Redis client instance accessible through `get_redis().client` property with validation to ensure initialization
 - Automatic connection health check during initialization
 - Comprehensive error handling and logging for Redis operations
+
+## Postgres Integration
+
+**Dependencies:**
+- Added `asyncpg>=0.31.0` for async PostgreSQL support
+- Added `sqlalchemy[asyncio]>=2.0.44` for ORM with async support
+
+```sh
+uv add asyncpg "sqlalchemy[asyncio]"
+```
+
+**Infrastructure Layer:**
+- Created `app/infrastructure/storage/postgres.py` with `Postgres` class for database connection management
+- Implemented `init()` method to initialize async engine and session factory, ensuring `uuid-ossp` extension exists
+- Implemented `shutdown()` method for graceful resource cleanup
+- Created `get_db_session()` FastAPI dependency for managing transaction scopes and async sessions
+
+**Features:**
+- Integrated Postgres initialization in `app/main.py` via `await get_postgres().init()` at startup
+- Integrated Postgres shutdown in `app/main.py` via `await get_postgres().shutdown()` on app exit
+
+**Configuration:**
+- Added `sqlalchemy_database_uri` to `core/config.py` (default: `"postgresql+asyncpg://springer:postgres@localhost:5432/manus"`)

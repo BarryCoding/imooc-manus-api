@@ -11,7 +11,9 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
 
     # 数据库
-    sqlalchemy_database_uri: str = ""
+    sqlalchemy_database_uri: str = (
+        "postgresql+asyncpg://springer:postgres@localhost:5432/manus"
+    )
 
     # Redis
     redis_host: str = "localhost"
