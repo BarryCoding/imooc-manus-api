@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.infrastructure.logging import setup_logging
+from app.infrastructure.storage.redis import get_redis
 from app.interface.endpoint.route import router
 from app.interface.error.exception_handler import register_exception_handler
 from core.config import get_settings
@@ -31,13 +32,15 @@ async def lifespan(app: FastAPI):
     # 1.日志打印代码已经开始执行了
     logger.info("MoocManus正在初始化")
 
-    # TODO: 等待接入 postgres/redis/fastapi/cos
+    # 2.初始化 Redis 客户端
+    await get_redis().init()
 
     try:
         # 3.lifespan分界点
         yield
     finally:
-        # 4.应用关闭时执行
+        # 4.应用关闭时执行 关闭 Redis 客户端
+        await get_redis().shutdown()
         logger.info("MoocManus正在关闭")
 
 

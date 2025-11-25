@@ -138,3 +138,26 @@ redis:latest
 
 docker ps
 ```
+
+## Redis Integration
+
+**Dependencies:**
+- Added `redis>=7.1.0` to project dependencies
+
+```sh
+uv add redis
+```
+
+**Infrastructure Layer:**
+- Created `app/infrastructure/storage/redis.py` with `RedisClient` class for Redis connection management
+- Implemented async `init()` method for Redis client initialization with connection testing via `ping()`
+- Implemented async `shutdown()` method for graceful Redis client closure
+- Created `get_redis()` function with `@lru_cache()` decorator to implement singleton pattern for Redis client instance
+- Redis client configured with `decode_responses=True` for automatic string decoding
+
+**Features:**
+- Integrated Redis client initialization in `app/main.py` lifespan startup context via `await get_redis().init()`
+- Integrated Redis client shutdown in `app/main.py` lifespan shutdown context via `await get_redis().shutdown()`
+- Redis client instance accessible through `get_redis().client` property with validation to ensure initialization
+- Automatic connection health check during initialization
+- Comprehensive error handling and logging for Redis operations
