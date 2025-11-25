@@ -113,3 +113,28 @@ uv run uvicorn app.main:app --reload
 **Features:**
 - Integrated exception handler registration in `app/main.py` via `register_exception_handler(app)` at application startup
 - All exception handlers log errors using the application logger and return responses following the unified `Response` schema (code, msg, data) as JSON with appropriate HTTP status codes
+
+## Docker Run
+
+```sh
+docker run --detach \
+--name manus-postgres \
+--publish 5432:5432 \
+--env POSTGRES_USER=springer \
+--env POSTGRES_PASSWORD=postgres \
+--env POSTGRES_DB=manus \
+--volume manus_postgres_data:/var/lib/postgresql \
+postgres:latest
+
+docker ps
+```
+
+```sh
+docker run --detach \
+--name manus-redis \
+--publish 6379:6379 \
+--volume manus_redis_data:/data \
+redis:latest
+
+docker ps
+```
