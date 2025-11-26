@@ -184,3 +184,28 @@ uv add asyncpg "sqlalchemy[asyncio]"
 
 **Configuration:**
 - Added `sqlalchemy_database_uri` to `core/config.py` (default: `"postgresql+asyncpg://springer:postgres@localhost:5432/manus"`)
+
+## Tencent Cloud COS Integration
+
+**Dependencies:**
+- Added `cos-python-sdk-v5>=1.9.39` for Tencent Cloud Object Storage support
+
+```sh
+uv add cos-python-sdk-v5
+```
+
+**Infrastructure Layer:**
+- Created `app/infrastructure/storage/cos.py` with `Cos` class for COS client management
+- Implemented async `init()` method to create `CosS3Client` with region, credentials, and scheme configuration
+- Implemented async `shutdown()` method for graceful COS client cleanup and cache clearing
+- Created `get_cos()` function with `@lru_cache()` decorator to implement singleton pattern for COS client instance
+- COS client configured with `Token=None` for standard authentication mode
+
+**Features:**
+- Integrated COS client initialization in `app/main.py` lifespan startup context via `await get_cos().init()`
+- Integrated COS client shutdown in `app/main.py` lifespan shutdown context via `await get_cos().shutdown()`
+- COS client instance accessible through `get_cos().client` property with validation to ensure initialization
+- Comprehensive error handling and logging for COS operations
+
+**Configuration:**
+- Added COS settings to `core/config.py`: `cos_secret_id`, `cos_secret_key`, `cos_region`, `cos_scheme` (default: `"https"`), `cos_bucket`, and `cos_domain`

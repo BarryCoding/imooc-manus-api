@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.infrastructure.logging import setup_logging
+from app.infrastructure.storage.cos import get_cos
 from app.infrastructure.storage.postgres import get_postgres
 from app.infrastructure.storage.redis import get_redis
 from app.interface.endpoint.route import router
@@ -36,6 +37,7 @@ async def lifespan(app: FastAPI):
     # 2.初始化 所有数据库连接
     await get_redis().init()
     await get_postgres().init()
+    await get_cos().init()
 
     try:
         # 3.lifespan分界点
@@ -44,6 +46,7 @@ async def lifespan(app: FastAPI):
         # 4.应用关闭时执行 关闭 所有数据库连接
         await get_redis().shutdown()
         await get_postgres().shutdown()
+        await get_cos().shutdown()
         logger.info("MoocManus正在关闭")
 
 
