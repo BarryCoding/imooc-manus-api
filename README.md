@@ -209,3 +209,41 @@ uv add cos-python-sdk-v5
 
 **Configuration:**
 - Added COS settings to `core/config.py`: `cos_secret_id`, `cos_secret_key`, `cos_region`, `cos_scheme` (default: `"https"`), `cos_bucket`, and `cos_domain`
+
+## Alembic
+
+- demo model in `app/infrastructure/model/demo.py`
+
+```sh
+# install dependencies
+uv add alembic psycopg2-binary
+```
+
+```sh
+# initiate alembic
+source .venv/bin/activate
+alembic init alembic
+```
+
+- update `sqlalchemy.url` in alembic.ini
+- update `target_metadata` in alembic/env.py
+
+```sh
+# revision with comment of current changes
+alembic revision --autogenerate -m "create demos table"
+```
+
+```sh
+# upgrade database
+alembic upgrade <revision_id>
+alembic upgrade head
+```
+
+```sh
+# downgrade database
+alembic downgrade <revision_id>
+alembic downgrade -1
+alembic downgrade base
+```
+
+- clean up: remove demo.py and its versions file
