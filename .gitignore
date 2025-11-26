@@ -14,3 +14,6 @@ wheels/
 
 # customized cursor rules
 .cursor/
+
+# tmp
+tmp

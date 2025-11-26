@@ -247,3 +247,25 @@ alembic downgrade base
 ```
 
 - clean up: remove demo.py and its versions file
+
+## Pytest Integration
+
+**Dependencies:**
+- Added `pytest>=9.0.1` and `httpx>=0.28.1` to development dependencies
+
+```sh
+uv add pytest httpx --dev
+```
+
+**Configuration:**
+- Created `pytest.ini` configuring `testpaths = test` and `cache_dir = tmp/.pytest_cache`
+- Updated `.gitignore` to exclude `tmp/` directory
+
+**Features:**
+- Created `test/conftest.py` with `client` fixture using `TestClient` for integration testing
+- Created `test/app/interface/endpoint/test_status_route.py` with `test_get_status()` to verify health check endpoint
+- Established test directory structure mirroring the application layout
+
+```sh
+pytest
+```
