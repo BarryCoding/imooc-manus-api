@@ -354,3 +354,73 @@ uv add filelock
 # Test OpenAI LLM implementation
 uv run -m app.infrastructure.external.llm.openai_llm
 ```
+
+## System Status & Health Checks
+
+```mermaid
+classDiagram
+    direction TB
+
+    namespace Interface_Layer {
+        class StatusRoute {
+            +get_status()
+        }
+        class ServiceDependency {
+            +get_status_service()
+        }
+    }
+
+    namespace Application_Layer {
+        class StatusService {
+            +check_all()
+        }
+    }
+
+    namespace Domain_Layer {
+        class HealthChecker {
+            <<interface>>
+            +check()
+        }
+        class HealthStatus {
+            +service: str
+            +status: str
+            +details: str
+        }
+    }
+
+    namespace Infrastructure_Layer {
+        class PostgresHealthChecker {
+            +check()
+        }
+        class RedisHealthChecker {
+            +check()
+        }
+    }
+
+    StatusRoute ..> ServiceDependency : uses (Depends)
+    StatusRoute ..> StatusService : uses
+    ServiceDependency ..> StatusService : creates
+    ServiceDependency ..> PostgresHealthChecker : creates
+    ServiceDependency ..> RedisHealthChecker : creates
+    StatusService ..> HealthChecker : uses
+    StatusService ..> HealthStatus : returns
+    PostgresHealthChecker ..|> HealthChecker : implements
+    RedisHealthChecker ..|> HealthChecker : implements
+    PostgresHealthChecker ..> HealthStatus : creates
+    RedisHealthChecker ..> HealthStatus : creates
+```
+
+**Domain Layer:**
+- Created `app/domain/model/health_status.py` defining `HealthStatus` model for standardized status reporting
+- Created `app/domain/external/health_checker.py` defining `HealthChecker` protocol for health check implementations
+
+**Application Layer:**
+- Created `app/application/service/status_service.py` with `StatusService` to orchestrate parallel health checks
+
+**Infrastructure Layer:**
+- Created `app/infrastructure/external/health_checker/postgres_health_checker.py` implementing `PostgresHealthChecker`
+- Created `app/infrastructure/external/health_checker/redis_health_checker.py` implementing `RedisHealthChecker`
+
+**Interface Layer:**
+- Updated `app/interface/endpoint/status_route.py` to use `StatusService` for the `/status` endpoint
+- Updated `app/interface/service_dependency.py` to provide `StatusService` with configured health **checkers**
