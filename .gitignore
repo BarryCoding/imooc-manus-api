@@ -17,3 +17,7 @@ wheels/
 
 # tmp
 tmp
+
+# app config 
+app_config.lock
+app_config.yaml

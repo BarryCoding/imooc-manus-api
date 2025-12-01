@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     # 项目
     env: str = "development"
     log_level: str = "INFO"
+    app_config_filepath: str = "app_config.yaml"
 
     # 数据库
     sqlalchemy_database_uri: str = (

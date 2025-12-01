@@ -269,3 +269,73 @@ uv add pytest httpx --dev
 ```sh
 pytest
 ```
+
+## App Config Management
+
+```mermaid
+classDiagram
+    direction TB
+
+    namespace Interface_Layer {
+        class AppConfigRoute {
+            +get_llm_config()
+            +update_llm_config()
+        }
+    }
+
+    namespace Domain_Layer {
+        class AppConfig {
+            +llm_config: LLMConfig
+        }
+        class LLMConfig {
+            +base_url: HttpUrl
+            +api_key: str
+        }
+        class AppConfigRepository {
+            <<interface>>
+            +load()
+            +save()
+        }
+        class AppConfigService {
+            +get_llm_config()
+            +update_llm_config()
+        }
+    }
+
+    namespace Infrastructure_Layer {
+        class FileAppConfigRepository {
+            +load()
+            +save()
+        }
+    }
+
+    AppConfigRoute ..> AppConfigService : uses
+    AppConfigService ..> AppConfigRepository : uses
+    AppConfigService ..> AppConfig : manages
+    AppConfigRepository ..> AppConfig : persists
+    FileAppConfigRepository ..|> AppConfigRepository : implements
+    AppConfig *-- LLMConfig : contains
+```
+
+**Dependencies:**
+- Added `filelock>=3.20.0` for safe concurrent file writes
+
+```sh
+uv add filelock
+```
+
+**Domain Layer:**
+- Created `app/domain/model/app_config.py` defining `AppConfig` and `LLMConfig` domain entities
+- Created `app/domain/repository/app_config_repository.py` with `AppConfigRepository` protocol definition
+- Created `app/domain/service/app_config_service.py` with `AppConfigService` for configuration business logic
+
+**Infrastructure Layer:**
+- Created `app/infrastructure/repository/file_app_config_repository.py` implementing `FileAppConfigRepository` with YAML storage
+
+**Interface Layer:**
+- Created `app/interface/endpoint/app_config_route.py` with `get_llm_config()` and `update_llm_config()` endpoints
+- Created `app/interface/service_dependency.py` with `get_app_config_service()` dependency provider
+- Updated `app/interface/endpoint/route.py` to register `app_config_route` in the API router
+
+**Configuration:**
+- Added `app_config_filepath` setting to `core/config.py`

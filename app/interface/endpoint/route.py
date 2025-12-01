@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.interface.endpoint import status_route
+from app.interface.endpoint import app_config_route, status_route
 
 
 def create_api_routes() -> APIRouter:
@@ -10,6 +10,7 @@ def create_api_routes() -> APIRouter:
 
     # 2.将各个模块添加到api_router中
     api_router.include_router(status_route.router)
+    api_router.include_router(app_config_route.router)
 
     # 3.返回api路由实例
     return api_router
