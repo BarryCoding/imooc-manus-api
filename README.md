@@ -281,6 +281,16 @@ classDiagram
             +get_llm_config()
             +update_llm_config()
         }
+        class ServiceDependency {
+            +get_app_config_service()
+        }
+    }
+
+    namespace Application_Layer {
+        class AppConfigService {
+            +get_llm_config()
+            +update_llm_config()
+        }
     }
 
     namespace Domain_Layer {
@@ -296,10 +306,6 @@ classDiagram
             +load()
             +save()
         }
-        class AppConfigService {
-            +get_llm_config()
-            +update_llm_config()
-        }
     }
 
     namespace Infrastructure_Layer {
@@ -309,7 +315,10 @@ classDiagram
         }
     }
 
+    AppConfigRoute ..> ServiceDependency : uses (Depends)
     AppConfigRoute ..> AppConfigService : uses
+    ServiceDependency ..> AppConfigService : creates
+    ServiceDependency ..> FileAppConfigRepository : creates
     AppConfigService ..> AppConfigRepository : uses
     AppConfigService ..> AppConfig : manages
     AppConfigRepository ..> AppConfig : persists
@@ -327,7 +336,9 @@ uv add filelock
 **Domain Layer:**
 - Created `app/domain/model/app_config.py` defining `AppConfig` and `LLMConfig` domain entities
 - Created `app/domain/repository/app_config_repository.py` with `AppConfigRepository` protocol definition
-- Created `app/domain/service/app_config_service.py` with `AppConfigService` for configuration business logic
+
+**Application Layer:**
+- Created `app/application/service/app_config_service.py` with `AppConfigService` for configuration business logic
 
 **Infrastructure Layer:**
 - Created `app/infrastructure/repository/file_app_config_repository.py` implementing `FileAppConfigRepository` with YAML storage

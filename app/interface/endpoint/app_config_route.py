@@ -2,8 +2,8 @@ import logging
 
 from fastapi import APIRouter, Depends
 
+from app.application.service.app_config_service import AppConfigService
 from app.domain.model.app_config import LLMConfig
-from app.domain.service.app_config_service import AppConfigService
 from app.interface.schema import Response
 from app.interface.service_dependency import get_app_config_service
 

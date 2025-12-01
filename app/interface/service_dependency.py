@@ -4,8 +4,8 @@ from functools import lru_cache
 from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.application.service.app_config_service import AppConfigService
 from app.application.service.status_service import StatusService
-from app.domain.service.app_config_service import AppConfigService
 from app.infrastructure.external.health_checker import (
     PostgresHealthChecker,
     RedisHealthChecker,
