@@ -339,3 +339,18 @@ uv add filelock
 
 **Configuration:**
 - Added `app_config_filepath` setting to `core/config.py`
+
+## LLM Integration
+
+**Domain Layer:**
+- Created `app/domain/external/llm.py` defining `LLM` protocol with `invoke` method and properties (`model_name`, `temperature`, `max_tokens`)
+
+**Infrastructure Layer:**
+- Created `app/infrastructure/external/llm/openai_llm.py` implementing `OpenAILLM` class using `AsyncOpenAI` client
+- Implemented `invoke` method handling message invocation with optional tools and response format support
+- Added local debug support for single-file testing
+
+```sh
+# Test OpenAI LLM implementation
+uv run -m app.infrastructure.external.llm.openai_llm
+```
