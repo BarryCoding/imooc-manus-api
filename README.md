@@ -441,3 +441,13 @@ classDiagram
 **Domain Layer:**
 - Created `app/domain/external/message_queue.py` defining `MessageQueue` protocol
 - Created `app/domain/external/task.py` defining `Task` protocol and `TaskRunner` abstract base class
+
+## Redis Message Queue
+
+**Domain Layer:**
+- Updated `app/domain/external/message_queue.py` expanding `MessageQueue` protocol with comprehensive queue operations (`put`, `get`, `pop`, `clear`, etc.)
+
+**Infrastructure Layer:**
+- Created `app/infrastructure/external/message_queue/redis_stream_message_queue.py` implementing `RedisStreamMessageQueue` class
+- Implemented Redis Stream-based queuing using `xadd`, `xread`, `xrange`, and `xdel` operations
+- Implemented distributed locking mechanism with `_acquire_lock()` and `_release_lock()` for safe concurrent `pop` operations
