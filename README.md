@@ -451,3 +451,12 @@ classDiagram
 - Created `app/infrastructure/external/message_queue/redis_stream_message_queue.py` implementing `RedisStreamMessageQueue` class
 - Implemented Redis Stream-based queuing using `xadd`, `xread`, `xrange`, and `xdel` operations
 - Implemented distributed locking mechanism with `_acquire_lock()` and `_release_lock()` for safe concurrent `pop` operations
+
+## Redis Stream Task
+
+**Infrastructure Layer:**
+- Created `app/infrastructure/external/task/redis_stream_task.py` implementing `RedisStreamTask` class
+- Implemented `invoke()` method to execute tasks asynchronously using `TaskRunner`
+- Implemented `cancel()` method to stop running tasks and clean up resources
+- Implemented in-memory task registry `_task_registry` to track and retrieve active tasks by ID
+- Integrated `RedisStreamMessageQueue` for task input and output streams (`task:input:{id}`, `task:output:{id}`)
