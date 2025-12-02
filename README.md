@@ -434,4 +434,10 @@ classDiagram
 
 **Interface Layer:**
 - Updated `app/interface/endpoint/status_route.py` to use `StatusService` for the `/status` endpoint
-- Updated `app/interface/service_dependency.py` to provide `StatusService` with configured health **checkers**
+- Updated `app/interface/service_dependency.py` to provide `StatusService` with configured health checkers
+
+## Task & Message Queue Protocols
+
+**Domain Layer:**
+- Created `app/domain/external/message_queue.py` defining `MessageQueue` protocol
+- Created `app/domain/external/task.py` defining `Task` protocol and `TaskRunner` abstract base class
