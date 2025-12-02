@@ -134,7 +134,7 @@ class RedisStreamMessageQueue(MessageQueue):
             return message_id, message_data.get("data")
         except Exception as e:
             logger.error(f"解析消息队列[{self._stream_name}]出错: {str(e)}")
-            return None
+            return None, None
         finally:
             await self._release_lock(lock_key, lock_value)
 
