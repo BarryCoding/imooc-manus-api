@@ -460,3 +460,10 @@ classDiagram
 - Implemented `cancel()` method to stop running tasks and clean up resources
 - Implemented in-memory task registry `_task_registry` to track and retrieve active tasks by ID
 - Integrated `RedisStreamMessageQueue` for task input and output streams (`task:input:{id}`, `task:output:{id}`)
+
+## Memory & Plan Model
+
+**Domain Layer:**
+- Created `app/domain/model/memory.py` defining `Memory` class for managing agent message history with support for rollback and compaction
+- Created `app/domain/model/plan.py` defining `Plan` and `Step` models for task orchestration
+- Defined `ExecutionStatus` enum in `app/domain/model/plan.py` to track task/step states (`PENDING`, `RUNNING`, `COMPLETED`, `FAILED`)
