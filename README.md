@@ -467,3 +467,17 @@ classDiagram
 - Created `app/domain/model/memory.py` defining `Memory` class for managing agent message history with support for rollback and compaction
 - Created `app/domain/model/plan.py` defining `Plan` and `Step` models for task orchestration
 - Defined `ExecutionStatus` enum in `app/domain/model/plan.py` to track task/step states (`PENDING`, `RUNNING`, `COMPLETED`, `FAILED`)
+
+## Event Model
+
+**Domain Layer:**
+- Created `app/domain/model/event.py` defining `BaseEvent` class with common event attributes (`id`, `type`, `created_at`)
+- Created `PlanEvent` class with `PlanEventStatus` enum (`CREATED`, `UPDATED`, `COMPLETED`) for tracking plan lifecycle events
+- Created `TitleEvent` class for title update events
+- Created `StepEvent` class with `StepEventStatus` enum (`STARTED`, `COMPLETED`, `FAILED`) for tracking step execution events
+- Created `MessageEvent` class for user and assistant message events with attachment support
+- Created `ToolEvent` class for tracking tool invocation events
+- Created `WaitEvent` class for user input confirmation events
+- Created `ErrorEvent` class for error notification events
+- Created `DoneEvent` class for task completion events
+- Defined `Event` union type combining all event types for type-safe event handling
