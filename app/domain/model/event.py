@@ -5,7 +5,9 @@ from typing import Any, Literal, Union
 
 from pydantic import BaseModel, Field
 
+from app.domain.model.file import File
 from app.domain.model.plan import Plan, Step
+from app.domain.model.tool_result import ToolResult
 
 
 class BaseEvent(BaseModel):
@@ -61,15 +63,45 @@ class MessageEvent(BaseEvent):
     type: Literal["message"] = "message"
     role: Literal["user", "assistant"] = "assistant"  # 消息角色
     message: str = ""  # 消息本身
-    # TODO: File类型待定
-    attachments: list[Any] = Field(default_factory=list)  # 附件列表信息
+    attachments: list[File] = Field(default_factory=list)  # 附件列表信息
+
+
+class BrowserToolContent(BaseModel):
+    """浏览器工具扩展内容"""
+
+    screenshot: str  # 浏览器快照截图
+
+
+class MCPToolContent(BaseModel):
+    """MCP工具内容"""
+
+    result: Any
+
+
+# TODO:工具扩展内容待完善
+ToolContent = Union[BrowserToolContent, MCPToolContent]
+
+
+class ToolEventStatus(str, Enum):
+    """工具事件状态类型枚举"""
+
+    CALLING = "calling"  # 调用中
+    CALLED = "called"  # 调用完毕
 
 
 class ToolEvent(BaseEvent):
     """工具事件类"""
 
     type: Literal["tool"] = "tool"
-    # TODO:
+    status: ToolEventStatus = ToolEventStatus.CALLING  # 工具事件状态
+    tool_call_id: str  # 工具调用id
+    tool_name: str  # 工具集的名字
+    tool_content: ToolContent | None = None  # 工具扩展内容
+    tool_result: ToolResult | None = None  # 工具调用结果
+
+    # FIXME: distinguish function_name and tool_name
+    function_name: str  # LLM调用函数/工具名字
+    function_args: dict[str, Any]  # LLM生成的工具调用参数
 
 
 class WaitEvent(BaseEvent):

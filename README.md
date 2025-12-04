@@ -508,3 +508,15 @@ uv add json-repair
   - Implemented `get_tools()` method in `BaseTool` class with caching to retrieve tool schemas for LLM integration
   - Implemented `_filter_parameters()` class method in `BaseTool` to validate and filter kwargs against method signatures
   - Implemented `invoke()` method in `BaseTool` class for dynamic tool execution with automatic parameter filtering to handle LLM hallucinations
+
+## File Model & Enhanced Event System
+
+**Domain Layer:**
+- Created `app/domain/model/file.py` defining `File` model for tracking uploaded or generated files with attributes (`id`, `filename`, `filepath`, `key`, `extension`, `mime_type`, `size`)
+- Updated `app/domain/model/event.py` to import `File` and `ToolResult` models for type-safe event handling
+- Updated `MessageEvent.attachments` in `app/domain/model/event.py` from `list[Any]` to `list[File]` for strongly-typed attachment support
+- Created `BrowserToolContent` model in `app/domain/model/event.py` with `screenshot` field for browser tool results
+- Created `MCPToolContent` model in `app/domain/model/event.py` with generic `result` field for MCP tool results
+- Defined `ToolContent` union type in `app/domain/model/event.py` combining `BrowserToolContent` and `MCPToolContent`
+- Created `ToolEventStatus` enum in `app/domain/model/event.py` with states (`CALLING`, `CALLED`) for tracking tool execution lifecycle
+- Completed `ToolEvent` class implementation in `app/domain/model/event.py` with fields (`status`, `tool_call_id`, `tool_name`, `tool_content`, `tool_result`, `function_name`, `function_args`) for comprehensive tool invocation tracking
