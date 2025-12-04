@@ -481,3 +481,19 @@ classDiagram
 - Created `ErrorEvent` class for error notification events
 - Created `DoneEvent` class for task completion events
 - Defined `Event` union type combining all event types for type-safe event handling
+
+## JSON Parser with Repair
+
+**Dependencies:**
+- Added `json-repair>=0.54.2` for robust JSON parsing with automatic repair capabilities
+
+```sh
+uv add json-repair
+```
+
+**Domain Layer:**
+- Created `app/domain/external/json_parser.py` defining `JSONParser` protocol with `invoke()` method for parsing and repairing JSON strings
+
+**Infrastructure Layer:**
+- Created `app/infrastructure/json_parser/repair_json_parser.py` implementing `RepairJSONParser` class using `json_repair` library
+- Implemented `invoke()` method with text validation, default value support, and automatic JSON repair via `json_repair.repair_json()` with `ensure_ascii=False`
