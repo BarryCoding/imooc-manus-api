@@ -520,3 +520,19 @@ uv add json-repair
 - Defined `ToolContent` union type in `app/domain/model/event.py` combining `BrowserToolContent` and `MCPToolContent`
 - Created `ToolEventStatus` enum in `app/domain/model/event.py` with states (`CALLING`, `CALLED`) for tracking tool execution lifecycle
 - Completed `ToolEvent` class implementation in `app/domain/model/event.py` with fields (`status`, `tool_call_id`, `tool_name`, `tool_content`, `tool_result`, `function_name`, `function_args`) for comprehensive tool invocation tracking
+
+## Agent Configuration Management
+
+**Domain Layer:**
+- Created `AgentConfig` model in `app/domain/model/app_config.py` with configurable fields for `max_iterations` (default: 100, range: 1-999), `max_retries` (default: 3, range: 2-9), and `max_search_results` (default: 10, range: 2-29)
+- Updated `AppConfig` model in `app/domain/model/app_config.py` to include `agent_config: AgentConfig` field
+
+**Application Layer:**
+- Converted `_load_app_config()`, `get_llm_config()`, and `update_llm_config()` methods in `app/application/service/app_config_service.py` to async functions
+- Added `get_agent_config()` method in `app/application/service/app_config_service.py` to retrieve agent configuration
+- Added `update_agent_config()` method in `app/application/service/app_config_service.py` to update agent configuration with validation and persistence
+
+**Interface Layer:**
+- Updated `get_llm_config()` and `update_llm_config()` endpoints in `app/interface/endpoint/app_config_route.py` to use `await` for async service calls
+- Created `get_agent_config()` endpoint in `app/interface/endpoint/app_config_route.py` at `/api/app-config/agent` (GET) to retrieve agent configuration
+- Created `update_agent_config()` endpoint in `app/interface/endpoint/app_config_route.py` at `/api/app-config/agent` (POST) to update agent configuration
