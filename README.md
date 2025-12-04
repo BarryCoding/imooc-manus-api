@@ -497,3 +497,14 @@ uv add json-repair
 **Infrastructure Layer:**
 - Created `app/infrastructure/json_parser/repair_json_parser.py` implementing `RepairJSONParser` class using `json_repair` library
 - Implemented `invoke()` method with text validation, default value support, and automatic JSON repair via `json_repair.repair_json()` with `ensure_ascii=False`
+
+## Tool System
+
+**Domain Layer:**
+- Created `app/domain/model/tool_result.py` defining `ToolResult[T]` generic model for standardized tool execution results with `success`, `message`, and `data` fields
+- Created `app/domain/service/tool/base.py` with `BaseTool` class providing unified tool management and invocation interface
+  - Implemented `tool()` decorator for registering methods as tools with `name`, `description`, `parameters`, and `required` fields
+  - Implemented `has_tool()` method in `BaseTool` class to check tool existence by name
+  - Implemented `get_tools()` method in `BaseTool` class with caching to retrieve tool schemas for LLM integration
+  - Implemented `_filter_parameters()` class method in `BaseTool` to validate and filter kwargs against method signatures
+  - Implemented `invoke()` method in `BaseTool` class for dynamic tool execution with automatic parameter filtering to handle LLM hallucinations
