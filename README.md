@@ -536,3 +536,24 @@ uv add json-repair
 - Updated `get_llm_config()` and `update_llm_config()` endpoints in `app/interface/endpoint/app_config_route.py` to use `await` for async service calls
 - Created `get_agent_config()` endpoint in `app/interface/endpoint/app_config_route.py` at `/api/app-config/agent` (GET) to retrieve agent configuration
 - Created `update_agent_config()` endpoint in `app/interface/endpoint/app_config_route.py` at `/api/app-config/agent` (POST) to update agent configuration
+
+## Base Agent Implementation
+
+**Domain Layer:**
+- Created `app/domain/model/message.py` defining `Message` model with `message` (str) and `attachments` (list[str]) fields for user input handling
+- Created `app/domain/service/agent/base.py` implementing `BaseAgent` abstract class for agent orchestration
+- Implemented `BaseAgent.__init__()` accepting `AgentConfig`, `LLM`, `Memory`, `JSONParser`, and `tools` (list[BaseTool]) for agent initialization
+- Implemented `BaseAgent.invoke()` async generator method yielding `Event` objects for streaming agent responses with tool execution
+- Implemented `BaseAgent._invoke_llm()` method for LLM invocation with automatic memory management, retry logic, and empty response handling
+- Implemented `BaseAgent._invoke_tool()` method with retry mechanism using `AgentConfig.max_retries` for resilient tool execution
+- Implemented `BaseAgent._get_available_tools()` method to aggregate tool schemas from all registered `BaseTool` instances
+- Implemented `BaseAgent._get_tool()` method to locate tool packages by tool name
+- Implemented `BaseAgent._add_to_memory()` method for automatic system prompt injection and message history management
+- Implemented `BaseAgent.compact_memory()` method delegating to `Memory.compact()` for memory optimization
+- Implemented `BaseAgent.roll_back()` method for state recovery handling user messages and tool call interruptions
+- Agent supports configurable `name`, `_system_prompt`, `_format`, `_retry_interval` (default: 1.0s), and `_tool_choice` class attributes
+- Agent enforces single tool call per LLM response by slicing `tool_calls[:1]` to prevent parallel tool execution
+- Agent uses `AgentConfig.max_iterations` to limit execution loops and prevent infinite agent cycles
+
+**Infrastructure Layer:**
+- Updated `app/infrastructure/external/llm/openai_llm.py` to accept `**kwargs` in `OpenAILLM.__init__()` for flexible `AsyncOpenAI` client configuration
