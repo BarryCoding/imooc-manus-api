@@ -557,3 +557,5 @@ uv add json-repair
 
 **Infrastructure Layer:**
 - Updated `app/infrastructure/external/llm/openai_llm.py` to accept `**kwargs` in `OpenAILLM.__init__()` for flexible `AsyncOpenAI` client configuration
+
+## System Prompt Preparation
