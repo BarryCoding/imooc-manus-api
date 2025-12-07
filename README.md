@@ -559,3 +559,16 @@ uv add json-repair
 - Updated `app/infrastructure/external/llm/openai_llm.py` to accept `**kwargs` in `OpenAILLM.__init__()` for flexible `AsyncOpenAI` client configuration
 
 ## System Prompt Preparation
+
+## Planner Agent Implementation
+
+**Domain Layer:**
+- Created `app/domain/service/prompt/planner.py` with `PLANNER_SYSTEM_PROMPT` defining task planning agent system instructions
+- Created `CREATE_PLAN_PROMPT_TEMPLATE` in `app/domain/service/prompt/planner.py` for generating initial task plans with TypeScript interface definitions for JSON response validation
+- Created `UPDATE_PLAN_PROMPT_TEMPLATE` in `app/domain/service/prompt/planner.py` for updating plans based on step execution results
+- Created `app/domain/service/agent/planner.py` implementing `PlannerAgent` class extending `BaseAgent` for task decomposition and plan management
+- Implemented `PlannerAgent.create_plan()` async generator method accepting `Message` and yielding `PlanEvent` with status `CREATED` after JSON parsing and validation
+- Implemented `PlannerAgent.update_plan()` async generator method accepting `Plan` and `Step` to dynamically update remaining steps while preserving completed steps
+- Configured `PlannerAgent` with `name="planner"`, `_format="json_object"`, and `_tool_choice="none"` for structured JSON output without tool usage
+- Agent combines `SYSTEM_PROMPT` and `PLANNER_SYSTEM_PROMPT` for comprehensive system instructions
+- Plan update logic preserves completed steps by identifying first pending step index and extending with new steps from LLM response
