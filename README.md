@@ -572,3 +572,17 @@ uv add json-repair
 - Configured `PlannerAgent` with `name="planner"`, `_format="json_object"`, and `_tool_choice="none"` for structured JSON output without tool usage
 - Agent combines `SYSTEM_PROMPT` and `PLANNER_SYSTEM_PROMPT` for comprehensive system instructions
 - Plan update logic preserves completed steps by identifying first pending step index and extending with new steps from LLM response
+
+## ReAct Agent Implementation
+
+**Domain Layer:**
+- Created `app/domain/service/prompt/react.py` with `REACT_SYSTEM_PROMPT` defining ReAct architecture agent system instructions for iterative task execution
+- Created `EXECUTE_STEP_PROMPT_TEMPLATE` in `app/domain/service/prompt/react.py` for executing individual plan steps with TypeScript interface definitions requiring `success`, `result`, and `attachments` fields
+- Created `SUMMARY_PROMPT` in `app/domain/service/prompt/react.py` for generating final task summaries with message and attachments in JSON format
+- Created `app/domain/service/agent/react.py` implementing `ReActAgent` class extending `BaseAgent` for step-by-step task execution
+- Implemented `ReActAgent.execute_step()` async generator method accepting `Plan`, `Step`, and `Message` to execute individual plan steps with tool invocation support
+- Implemented `ReActAgent.summarize()` async generator method to aggregate execution history and generate final response with attachments
+- Configured `ReActAgent` with `name="react"`, `_format="json_object"`, and combined `SYSTEM_PROMPT + REACT_SYSTEM_PROMPT` for comprehensive system instructions
+- Step execution handles `message_ask_user` tool specially by yielding `WaitEvent` and returning early to pause execution for user input
+- Step execution parses JSON responses to update `Step` attributes (`success`, `result`, `attachments`) and yields appropriate `StepEvent` with status (`STARTED`, `COMPLETED`, `FAILED`)
+- Summarization converts JSON output to `Message` model and transforms attachment paths to `File` objects before yielding final `MessageEvent`
