@@ -613,3 +613,27 @@ uv add httpx beautifulsoup4
 - Implemented automatic URL normalization for relative paths and protocol-less URLs
 - Implemented total results extraction using regex patterns and class-based element selectors
 - Configured user agent headers and cookie management for reliable Bing search access
+
+## MCP Configuration Management
+
+**Domain Layer:**
+- Updated `app/domain/model/app_config.py`:
+  - Created `MCPTransport` enum defining transport types (`STDIO`, `SSE`, `STREAMABLE_HTTP`)
+  - Created `MCPServerConfig` model with validation logic for transport-specific requirements
+  - Created `MCPConfig` model for managing multiple MCP servers
+  - Updated `AppConfig` model to include `mcp_config` field
+
+**Application Layer:**
+- Updated `app/application/service/app_config_service.py`:
+  - Added `update_and_create_mcp_servers()` method for adding/updating MCP server configurations
+  - Added `delete_mcp_server()` method for removing MCP server configurations
+  - Added `set_mcp_server_enabled()` method for toggling MCP server status
+
+**Infrastructure Layer:**
+- Updated `app/infrastructure/repository/file_app_config_repository.py` to initialize default `AppConfig` with empty `MCPConfig`
+
+**Interface Layer:**
+- Updated `app/interface/endpoint/app_config_route.py`:
+  - Created `create_mcp_servers()` endpoint at `/api/app-config/mcp-servers` (POST) to add/update MCP servers
+  - Created `delete_mcp_server()` endpoint at `/api/app-config/mcp-servers/{server_name}/delete` (POST) to remove MCP servers
+  - Created `set_mcp_server_enabled()` endpoint at `/api/app-config/mcp-servers/{server_name}/enabled` (POST) to toggle server status

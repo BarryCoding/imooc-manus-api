@@ -5,7 +5,7 @@ import yaml
 from filelock import FileLock
 
 from app.application.error.exception import ServerRequestsError
-from app.domain.model.app_config import AppConfig, LLMConfig
+from app.domain.model.app_config import AgentConfig, AppConfig, LLMConfig, MCPConfig
 from app.domain.repository.app_config_repository import AppConfigRepository
 
 logger = logging.getLogger(__name__)
@@ -27,7 +27,11 @@ class FileAppConfigRepository(AppConfigRepository):
     def _create_default_app_config_if_not_exists(self):
         """如果配置文件不存在，则使用默认配置并写入到本地文件"""
         if not self._config_path.exists():
-            default_app_config = AppConfig(llm_config=LLMConfig())
+            default_app_config = AppConfig(
+                llm_config=LLMConfig(),
+                agent_config=AgentConfig(),
+                mcp_config=MCPConfig(),
+            )
             self.save(default_app_config)
 
     def load(self) -> AppConfig | None:
