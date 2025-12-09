@@ -586,3 +586,30 @@ uv add json-repair
 - Step execution handles `message_ask_user` tool specially by yielding `WaitEvent` and returning early to pause execution for user input
 - Step execution parses JSON responses to update `Step` attributes (`success`, `result`, `attachments`) and yields appropriate `StepEvent` with status (`STARTED`, `COMPLETED`, `FAILED`)
 - Summarization converts JSON output to `Message` model and transforms attachment paths to `File` objects before yielding final `MessageEvent`
+
+## Web Search Tool Integration
+
+**Dependencies:**
+- Added `httpx>=0.28.1` for async HTTP client support
+- Added `beautifulsoup4>=4.14.3` for HTML parsing
+
+```sh
+uv add httpx beautifulsoup4
+```
+
+**Domain Layer:**
+- Created `app/domain/model/search.py` 
+  - defining `SearchResultItem` model with `url`, `title`, and `snippet` fields
+  - defining `SearchResults` model with `query`, `date_range`, `total_results`, and `results` fields
+- Created `app/domain/external/search.py` defining `SearchEngine` protocol with `invoke()` method accepting `query` and optional `date_range` parameters returning `ToolResult[SearchResults]`
+- Created `app/domain/service/tool/search.py` implementing `SearchTool` class extending `BaseTool` with `name="search"`
+- Implemented `SearchTool.search_web()` method decorated with `@tool()` for web search functionality with parameters (`query`, `date_range`) and enum values for date filtering (`all`, `past_hour`, `past_day`, `past_week`, `past_month`, `past_year`)
+
+**Infrastructure Layer:**
+- Created `app/infrastructure/search/bing_search.py` implementing `BingSearchEngine` class with Bing search API integration
+- Implemented `BingSearchEngine.invoke()` method using `httpx.AsyncClient` for async HTTP requests and `BeautifulSoup` for HTML parsing
+- Implemented date range filtering logic with epoch-based date calculations for Bing's `filters` parameter
+- Implemented robust result parsing with multiple fallback strategies for extracting titles, URLs, and snippets from `li.b_algo` DOM elements
+- Implemented automatic URL normalization for relative paths and protocol-less URLs
+- Implemented total results extraction using regex patterns and class-based element selectors
+- Configured user agent headers and cookie management for reliable Bing search access
