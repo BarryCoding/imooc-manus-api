@@ -637,3 +637,44 @@ uv add httpx beautifulsoup4
   - Created `create_mcp_servers()` endpoint at `/api/app-config/mcp-servers` (POST) to add/update MCP servers
   - Created `delete_mcp_server()` endpoint at `/api/app-config/mcp-servers/{server_name}/delete` (POST) to remove MCP servers
   - Created `set_mcp_server_enabled()` endpoint at `/api/app-config/mcp-servers/{server_name}/enabled` (POST) to toggle server status
+
+## MCP Client Manager & Tool Integration
+
+**Dependencies:**
+- Added `mcp>=1.23.3` for Model Context Protocol client support
+
+```sh
+uv add mcp
+```
+
+**Domain Layer:**
+- Created `app/domain/service/tool/mcp.py` implementing `MCPClientManager` class for managing MCP server connections and tool execution
+  - Implemented `initialize()` method to connect to all configured MCP servers with connection caching and initialization state tracking
+  - Implemented `_connect_mcp_servers()` method to iterate through MCP server configurations and establish connections
+  - Implemented `_connect_mcp_server()` method to route connections based on transport protocol type (`STDIO`, `SSE`, `STREAMABLE_HTTP`)
+  - Implemented `_connect_stdio_server()` method for STDIO transport using `stdio_client()` with command, args, and merged environment variables
+  - Implemented `_connect_sse_server()` method for SSE transport using `sse_client()` with URL and headers
+  - Implemented `_connect_streamable_http_server()` method for Streamable HTTP transport using `streamablehttp_client()` with URL and headers
+  - Implemented `_cache_mcp_server_tools()` method to retrieve and cache tool schemas from MCP servers via `session.list_tools()`
+  - Implemented `invoke()` method to execute MCP tools by parsing tool names, locating server sessions, and calling `session.call_tool()`
+  - Implemented `cleanup()` method to close async context stack, clear cached clients and tools, and reset initialization state
+  - Implemented `get_llm_tools()` method to convert MCP tool schemas to OpenAI-compatible format with prefixed tool names (`mcp_{server_name}_{tool_name}`)
+  - Used `AsyncExitStack` for managing multiple async context managers and avoiding nested `with` statements
+  - Implemented `tools` property to expose cached MCP tool schemas as read-only dictionary
+- Created `MCPTool` class in `app/domain/service/tool/mcp.py` extending `BaseTool` for MCP tool package management
+  - Implemented `initialize()` method to create and initialize `MCPClientManager` with MCP configuration
+  - Implemented `get_tools()` method to return LLM-compatible tool schemas from MCP client manager
+  - Implemented `has_tool()` method to check tool existence by name in cached tool list
+  - Implemented `invoke()` method to delegate tool execution to MCP client manager
+  - Implemented `cleanup()` method to clean up MCP client manager resources
+
+**Application Layer:**
+- Updated `app/application/service/app_config_service.py`:
+  - Added `get_mcp_servers()` method to retrieve MCP server list with tool information by initializing `MCPClientManager` and aggregating server configurations with cached tools
+
+**Interface Layer:**
+- Created `app/interface/schema/app_config.py`:
+  - Created `ListMCPServerItem` schema with fields (`server_name`, `enabled`, `transport`, `tools`) for MCP server list items
+  - Created `ListMCPServerResponse` schema with `mcp_servers` field for API response structure
+- Updated `app/interface/endpoint/app_config_route.py`:
+  - Implemented `get_mcp_servers()` endpoint at `/api/app-config/mcp-servers` (GET) to retrieve MCP server list with tool information using `AppConfigService.get_mcp_servers()`
