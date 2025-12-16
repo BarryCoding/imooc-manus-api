@@ -17,6 +17,7 @@ wheels/
 
 # tmp
 tmp
+.pytest_cache
 
 # app config 
 app_config.lock
