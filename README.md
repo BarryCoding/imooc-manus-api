@@ -678,3 +678,52 @@ uv add mcp
   - Created `ListMCPServerResponse` schema with `mcp_servers` field for API response structure
 - Updated `app/interface/endpoint/app_config_route.py`:
   - Implemented `get_mcp_servers()` endpoint at `/api/app-config/mcp-servers` (GET) to retrieve MCP server list with tool information using `AppConfigService.get_mcp_servers()`
+
+## Browser Automation with Playwright
+
+**Dependencies:**
+- Added `playwright>=1.57.0` for browser automation support
+- Added `markdownify>=1.2.2` for HTML to Markdown conversion
+
+```sh
+uv add playwright markdownify
+```
+
+```sh
+uvx playwright install
+```
+
+**Domain Layer:**
+- Created `app/domain/external/browser.py` defining `Browser` protocol with comprehensive browser automation methods:
+  - `view_page()` for retrieving current page content
+  - `navigate()` and `restart()` for page navigation
+  - `click()`, `input()`, `move_mouse()`, and `press_key()` for user interactions
+  - `scroll_up()` and `scroll_down()` for page scrolling with optional full-page navigation
+  - `screenshot()` for capturing page screenshots with optional full-page support
+  - `select_option()` for dropdown menu interactions
+  - `console_exec()` and `console_view()` for JavaScript console operations
+- Created `app/domain/service/tool/browser.py` implementing `BrowserTool` class extending `BaseTool` with 14 browser automation tools:
+  - Implemented `browser_view()`, `browser_navigate()`, `browser_restart()` tools for page viewing and navigation
+  - Implemented `browser_click()`, `browser_input()`, `browser_move_mouse()`, `browser_press_key()` tools for user interactions supporting both element index and coordinate-based operations
+  - Implemented `browser_scroll_up()` and `browser_scroll_down()` tools with optional full-page scrolling
+  - Implemented `browser_select_option()` tool for dropdown menu selection
+  - Implemented `browser_console_exec()` and `browser_console_view()` tools for JavaScript execution and console log viewing
+  - All tools include detailed descriptions and parameter specifications for LLM integration
+
+**Infrastructure Layer:**
+- Created `app/infrastructure/external/browser/playwright_browser.py` implementing `PlaywrightBrowser` class with CDP (Chrome DevTools Protocol) support:
+  - Implemented `initialize()` method with retry logic (max 5 attempts) for connecting to CDP browser and managing contexts/pages
+  - Implemented `cleanup()` method for graceful resource cleanup including pages, contexts, browser, and Playwright instances
+  - Implemented `_ensure_browser()` and `_ensure_page()` methods for lazy initialization and automatic page tracking
+  - Implemented `_extract_content()` method using JavaScript to extract visible page content, convert to Markdown via `markdownify`, and optionally process with LLM for content refinement (max 50k characters)
+  - Implemented `_extract_interactive_elements()` method to identify and cache interactive elements (buttons, inputs, links) with index-based identification using `data-manus-id` attributes
+  - Implemented `_get_element_by_id()` method for retrieving cached interactive elements by index
+  - Implemented `wait_for_page_load()` method with configurable timeout (default 15s) checking `document.readyState`
+  - Implemented all `Browser` protocol methods with comprehensive error handling and `ToolResult` responses
+  - Click and input operations support both element index and coordinate-based targeting with automatic element visibility detection and scroll-into-view fallback
+  - Screenshot operations return raw bytes with configurable full-page capture
+  - Console operations support JavaScript execution and log retrieval with optional line limits
+- Created `app/infrastructure/external/browser/playwright_browser_function.py` with JavaScript functions:
+  - `GET_VISIBLE_CONTENT_FUNCTION` for extracting visible page elements (text nodes, images, inputs, buttons) within viewport boundaries, filtering by size and CSS visibility properties
+  - `GET_INTERACTIVE_ELEMENTS_FUNCTION` for identifying interactive elements with metadata extraction (tag name, text content, labels, placeholders) and automatic `data-manus-id` attribute assignment for index-based element selection
+- Created `app/infrastructure/external/browser/playwrightBrowserFunction.js` containing original JavaScript implementations of browser automation functions (reference implementation)
