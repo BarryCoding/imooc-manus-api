@@ -723,7 +723,9 @@ uvx playwright install
   - Click and input operations support both element index and coordinate-based targeting with automatic element visibility detection and scroll-into-view fallback
   - Screenshot operations return raw bytes with configurable full-page capture
   - Console operations support JavaScript execution and log retrieval with optional line limits
+  - `console_exec()` method now automatically injects `INJECT_CONSOLE_LOGS_FUNCTION` before executing JavaScript to capture console.log outputs in `window.console.logs` array
 - Created `app/infrastructure/external/browser/playwright_browser_function.py` with JavaScript functions:
   - `GET_VISIBLE_CONTENT_FUNCTION` for extracting visible page elements (text nodes, images, inputs, buttons) within viewport boundaries, filtering by size and CSS visibility properties
   - `GET_INTERACTIVE_ELEMENTS_FUNCTION` for identifying interactive elements with metadata extraction (tag name, text content, labels, placeholders) and automatic `data-manus-id` attribute assignment for index-based element selection
+  - `INJECT_CONSOLE_LOGS_FUNCTION` for intercepting and storing console.log outputs by overriding the native console.log function and maintaining logs in `window.console.logs` array
 - Created `app/infrastructure/external/browser/playwrightBrowserFunction.js` containing original JavaScript implementations of browser automation functions (reference implementation)
