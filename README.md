@@ -729,3 +729,13 @@ uvx playwright install
   - `GET_INTERACTIVE_ELEMENTS_FUNCTION` for identifying interactive elements with metadata extraction (tag name, text content, labels, placeholders) and automatic `data-manus-id` attribute assignment for index-based element selection
   - `INJECT_CONSOLE_LOGS_FUNCTION` for intercepting and storing console.log outputs by overriding the native console.log function and maintaining logs in `window.console.logs` array
 - Created `app/infrastructure/external/browser/playwrightBrowserFunction.js` containing original JavaScript implementations of browser automation functions (reference implementation)
+
+## Sandbox Service Protocol
+
+**Domain Layer:**
+- Created `app/domain/external/sandbox.py` defining `Sandbox` protocol with comprehensive sandbox environment management capabilities:
+  - Shell tool methods: `exec_command()`, `view_shell()`, `wait_for_process()`, `write_to_process()`, `kill_process()`
+  - File operation methods: `file_write()`, `file_read()`, `file_exists()`, `file_delete()`, `file_list()`, `file_replace()`, `file_search()`, `file_find()`, `file_upload()`, `file_download()`
+  - Sandbox lifecycle methods: `ensure_sandbox()`, `destroy()`, `create()`, `get()`
+  - Browser integration method: `get_browser()` for retrieving browser instance within sandbox
+  - Read-only properties: `id`, `cdp_url`, `vnc_url` for sandbox identification and remote access
